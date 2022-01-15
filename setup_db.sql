@@ -66,23 +66,3 @@ insert into giorni_raccolta values
     (5, 1, 3), (5, 4, 3), (5, 6, 3), (5, 3, 2), (5, 2, 4), (5, 5, 5), (5, 2, 1),
     (6, 1, 3), (6, 3, 3), (6, 5, 3), (6, 4, 2), (6, 6, 4), (6, 5, 5), (6, 2, 1),
     (7, 1, 3), (7, 3, 3), (7, 5, 3), (7, 6, 2), (7, 2, 4), (7, 4, 4), (7, 4, 1);
-
-
-# tabella giorni_raccolta con i nomi al posto degli id
-SELECT comuni.comune, rifiuti.rifiuto, giorni.giorno
-FROM ((giorni_raccolta inner join comuni) inner join rifiuti) inner join giorni
-where comuni.id = giorni_raccolta.comune and rifiuti.id = giorni_raccolta.rifiuto and giorni_raccolta.giorno = giorni.id order by comuni.comune;
-
-# esempio giorno di raccolta vetro ad Altamura
-SELECT comuni.comune, rifiuti.rifiuto, giorni.giorno
-FROM ((giorni_raccolta inner join comuni) inner join rifiuti) inner join giorni
-where comuni.id = giorni_raccolta.comune and rifiuti.id = giorni_raccolta.rifiuto and giorni_raccolta.giorno = giorni.id and comuni.comune = 'Altamura' and rifiuti.rifiuto = 'vetro';
-
-# esempio rifiuti il martedi ad Altamura
-SELECT comuni.comune, rifiuti.rifiuto, giorni.giorno
-FROM ((giorni_raccolta inner join comuni) inner join rifiuti) inner join giorni
-where comuni.id = giorni_raccolta.comune and rifiuti.id = giorni_raccolta.rifiuto and giorni_raccolta.giorno = giorni.id and comuni.comune = 'Altamura' and giorni.giorno = 'martedì';
-
-SELECT giorni.giorno
-FROM ((giorni_raccolta inner join comuni) inner join rifiuti) inner join giorni
-where comuni.id = giorni_raccolta.comune and rifiuti.id = giorni_raccolta.rifiuto and giorni_raccolta.giorno = giorni.id and comuni.comune = 'COMUNE' and rifiuti.rifiuto = 'RIFIUTO';

@@ -2,18 +2,6 @@ from flask import Flask, request
 import mysql.connector
 from mysql.connector import Error
 
-try:
-    connection = mysql.connector.connect(host='localhost',
-                                         database='EcoBot_db',
-                                         user='root',
-                                         password='password')
-    if connection.is_connected():
-        db_Info = connection.get_server_info()
-        print("Connected to MySQL Server version ", db_Info)
-        
-except Error as e:
-    print("Error while connecting to MySQL", e)
-
 app = Flask(__name__)
 
 @app.route('/') # this is the home page route
@@ -36,12 +24,12 @@ def webhook():
         }
     
 def calcola_giorno_raccolta(comune, tipo_di_spazzatura):
+    connection = connect_db("localhost", "EcoBot_db", "root", "password")
     print("\nintent = giorno_raccolta\n  comune             = ", comune, "\n  tipo_di_spazzatura = ", tipo_di_spazzatura)
     query = "SELECT giorni.giorno FROM ((giorni_raccolta inner join comuni) inner join rifiuti) inner join giorni where comuni.id = giorni_raccolta.comune and rifiuti.id = giorni_raccolta.rifiuto and giorni_raccolta.giorno = giorni.id and comuni.comune = '" + comune + "' and rifiuti.rifiuto = '" + tipo_di_spazzatura + "';"
     cursor = connection.cursor()
     cursor.execute(query)
     result = [list[0] for list in cursor.fetchall()]
-    print(result)
     index = 0
     giorni = ''
     while index < len(result):
@@ -52,8 +40,6 @@ def calcola_giorno_raccolta(comune, tipo_di_spazzatura):
         if index!=0 and index == len(result)-1:
             giorni = giorni + " e " + str(result[index])
         index = index + 1
-    print("giorni : ", giorni)
-
     # scrivo l'articolo giusto
     if tipo_di_spazzatura == 'carta' or tipo_di_spazzatura == 'plastica e metalli':
         tipo_di_spazzatura = 'della ' + tipo_di_spazzatura
@@ -61,9 +47,13 @@ def calcola_giorno_raccolta(comune, tipo_di_spazzatura):
         tipo_di_spazzatura = "dell'" + tipo_di_spazzatura
     if tipo_di_spazzatura == 'vetro':
         tipo_di_spazzatura = 'del ' + tipo_di_spazzatura
-
     return ("A " + comune + ", la raccolta " + tipo_di_spazzatura + " cade di " + giorni + ".")
     
+def connect_db(host, database, user, password):
+    try:
+        connection = mysql.connector.connect(host=host, database=database, user=user, password=password)
+    except Error as err:
+        print("Error while connecting to MySQL ", err)
 
 if __name__ == '__main__':
   app.run(host='0.0.0.0', port=8080) # This line is required to run Flask on repl.it
